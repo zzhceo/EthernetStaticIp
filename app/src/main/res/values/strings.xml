@@ -1,0 +1,7 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">EthernetStaticIp</string>
+    <string name="ip_address">IP:<xliff:g id="result">%s</xliff:g></string>
+    <string name="dhcp_ip">DHCP IP</string>
+    <string name="static_ip">STATIC IP</string>
+    <string name="setting_notice">设置IP地址，设置完后将重启系统</string>
+</resources>

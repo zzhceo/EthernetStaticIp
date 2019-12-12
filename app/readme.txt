@@ -1,0 +1,1 @@
+编译之前需要在build.gradle增加签名信息，并替换当前目录下的platform.keystore，重新编译运行即可正常使用。

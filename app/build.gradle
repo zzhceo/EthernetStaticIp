@@ -1,0 +1,62 @@
+import groovy.xml.XmlUtil
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.zzh.ethernetstaticip"
+        minSdkVersion 28
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    //TODO must be use platform signature, or set ip will be error
+    // 替换app目录下的platform.keystore为自己设备的对应签名，去掉以下注释，并配置签名信息
+    /*signingConfigs {
+        debug {
+            storeFile file('platform.keystore')
+            storePassword 'xxx'
+            keyAlias 'xxx'
+            keyPassword 'xxx'
+        }
+        release {
+            storeFile file('platform.keystore')
+            storePassword 'xxx'
+            keyAlias 'xxx'
+            keyPassword 'xxx'
+        }
+    }*/
+}
+
+dependencies {
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    compileOnly files('libs/framework_androidgo.jar')
+}
+
+// make SDK directory's android.jar set in libs behind
+preBuild {
+    doLast {
+        def imlFile = file(project.name + ".iml")
+        println 'Change ' + project.name + '.iml order'
+        try {
+            def parseXml = new XmlParser().parse(imlFile)
+            def jdkNode = parseXml.component[1].orderEntry.find { it.'@type' == 'jdk' }
+            parseXml.component[1].remove(jdkNode)
+            def sdkString = "Android API " + android.compileSdkVersion.substring("android-".length()) + " Platform"
+            new Node(parseXml.component[1], 'orderEntry', ['type': 'jdk', 'jdkName': sdkString, 'jdkType': 'Android SDK'])
+            XmlUtil.serialize(parseXml, new FileOutputStream(imlFile))
+        } catch (FileNotFoundException e) {
+            //nop, iml not found.
+        }
+    }
+}
